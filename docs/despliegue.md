@@ -160,10 +160,16 @@ despliegue.
   php artisan db:seed --class=CatalogosSeeder
   ```
   (No ejecutes `PadronPruebaSeeder` en producción: es solo para pruebas
-  en desarrollo, así lo indica su propio comentario en el código.)
-- Crea el primer usuario administrador real desde la Shell, con
-  `php artisan tinker`, igual que se hizo en desarrollo — no existe
-  todavía una pantalla para eso.
+  en desarrollo, así lo indica su propio comentario en el código. El
+  padrón real se carga desde `/admin/padron/importar`, RF-31.)
+- Crea el primer usuario administrador real desde la Shell, con:
+  ```
+  php artisan usuario:crear-admin
+  ```
+  Pide correo y contraseña de forma interactiva (contraseña oculta, con
+  confirmación) y crea un usuario con rol `admin_principal`. Es el único
+  rol que puede importar el padrón y crear administradores adicionales
+  desde ahí en adelante.
 
 ## 7. Dominio propio (opcional)
 
