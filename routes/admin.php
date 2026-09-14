@@ -27,6 +27,8 @@ Route::middleware(['auth', 'rol:administrador,admin_principal'])
              ->name('ofertas.desactivar');
 
         Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes');
+        Route::get('/reportes/exportar/excel', [ReporteController::class, 'exportarExcel'])->name('reportes.exportar.excel');
+        Route::get('/reportes/exportar/pdf', [ReporteController::class, 'exportarPdf'])->name('reportes.exportar.pdf');
 
         Route::prefix('encuestas')->name('encuestas.')->group(function () {
             Route::get('/', [EncuestaAdminController::class, 'index'])->name('index');
