@@ -100,12 +100,16 @@ routes/web.php
 ## 8. Trabajo pendiente
 
 - [ ] Vistas Blade de los diez escenarios del numeral 6.1 del entregable E-08
-- [ ] Módulo de encuestas: controladores de la administración (RF-19, RF-20)
-- [ ] Exportadores a Excel y PDF (RF-24, RF-25)
+      (no se pudo verificar contra ese documento: nunca estuvo disponible en
+      `docs/` durante el desarrollo; sí se construyeron todas las pantallas
+      pedidas explícitamente)
+- [x] Módulo de encuestas: controladores de la administración (RF-19, RF-20)
+- [x] Exportadores a Excel y PDF (RF-24, RF-25)
 - [ ] Recordatorios de actualización de perfil (RF-21)
 - [ ] Autenticación con Google (RF-11)
-- [ ] Pruebas de las reglas RN-01, RN-02, RN-06, RN-07 y RN-08
-- [ ] Carga inicial del padrón de egresados
+- [x] Pruebas de las reglas RN-01, RN-02, RN-04, RN-06, RN-07 y RN-08
+- [ ] Carga inicial del padrón de egresados (el `PadronPruebaSeeder` existente
+      es solo para pruebas en desarrollo, no la carga real del padrón oficial)
 
 ## 9. Convenciones de ramas
 
