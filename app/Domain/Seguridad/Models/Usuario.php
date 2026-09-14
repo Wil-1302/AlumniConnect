@@ -4,11 +4,14 @@ namespace App\Domain\Seguridad\Models;
 
 use App\Domain\Egresados\Models\Egresado;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Usuario extends Authenticatable implements AuthenticatableContract
 {
+    use HasFactory;
+
     public const ROL_EGRESADO        = 'egresado';
     public const ROL_ADMINISTRADOR   = 'administrador';
     public const ROL_ADMIN_PRINCIPAL = 'admin_principal';

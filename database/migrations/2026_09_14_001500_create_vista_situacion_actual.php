@@ -20,7 +20,7 @@ return new class extends Migration
                    r.nombre AS rubro, x.empresa, x.cargo, e.actualizado_en
             FROM egresados e
             LEFT JOIN experiencias_laborales x
-                   ON x.egresado_id = e.id AND x.es_actual = 1
+                   ON x.egresado_id = e.id AND x.es_actual = TRUE
             LEFT JOIN situaciones_laborales s ON s.id = x.situacion_id
             LEFT JOIN rubros r ON r.id = x.rubro_id
         ');

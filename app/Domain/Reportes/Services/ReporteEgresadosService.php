@@ -51,7 +51,7 @@ class ReporteEgresadosService
     {
         return DB::table('v_situacion_actual_egresado')
             ->selectRaw('anio_egreso, COUNT(*) AS total,
-                         SUM(cuenta_como_empleo = 1) AS empleados')
+                         SUM(CASE WHEN cuenta_como_empleo THEN 1 ELSE 0 END) AS empleados')
             ->groupBy('anio_egreso')
             ->orderBy('anio_egreso')
             ->get();

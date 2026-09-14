@@ -19,7 +19,7 @@ actividades A25 a A33 del cronograma.
 
 - PHP 8.2 o superior
 - Composer 2
-- MySQL 8.0
+- PostgreSQL 16
 - Node 18 o superior (solo para compilar los recursos de interfaz)
 
 ## 3. Instalación
