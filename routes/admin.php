@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DirectorioController;
+use App\Http\Controllers\Admin\EncuestaAdminController;
 use App\Http\Controllers\Admin\OfertaAdminController;
 use App\Http\Controllers\Admin\ReporteController;
 use Illuminate\Support\Facades\Route;
@@ -26,4 +27,13 @@ Route::middleware(['auth', 'rol:administrador,admin_principal'])
              ->name('ofertas.desactivar');
 
         Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes');
+
+        Route::prefix('encuestas')->name('encuestas.')->group(function () {
+            Route::get('/', [EncuestaAdminController::class, 'index'])->name('index');
+            Route::get('/crear', [EncuestaAdminController::class, 'crear'])->name('crear');
+            Route::post('/', [EncuestaAdminController::class, 'guardar'])->name('guardar');
+            Route::patch('/{id}/activar', [EncuestaAdminController::class, 'activar'])->name('activar');
+            Route::patch('/{id}/desactivar', [EncuestaAdminController::class, 'desactivar'])->name('desactivar');
+            Route::get('/{id}/resultados', [EncuestaAdminController::class, 'resultados'])->name('resultados');
+        });
     });

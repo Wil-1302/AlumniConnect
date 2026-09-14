@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Egresado\EncuestaController;
 use App\Http\Controllers\Egresado\OfertaController;
 use App\Http\Controllers\Egresado\PerfilController;
 use Illuminate\Support\Facades\Route;
@@ -22,4 +23,10 @@ Route::middleware(['auth', 'rol:egresado'])
              ->name('situacion.actualizar');
 
         Route::get('/ofertas', [OfertaController::class, 'index'])->name('ofertas');
+
+        Route::prefix('encuestas')->name('encuestas.')->group(function () {
+            Route::get('/', [EncuestaController::class, 'index'])->name('index');
+            Route::get('/{id}/responder', [EncuestaController::class, 'mostrar'])->name('responder');
+            Route::post('/{id}/responder', [EncuestaController::class, 'guardar']);
+        });
     });

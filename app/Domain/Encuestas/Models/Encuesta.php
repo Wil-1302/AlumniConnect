@@ -29,6 +29,20 @@ class Encuesta extends Model
                      ->whereDate('fecha_fin', '>=', $hoy);
     }
 
+    /**
+     * Para listados administrativos: reutiliza la misma condición de
+     * scopeVigentes() sobre una encuesta ya cargada, sin duplicarla en
+     * la vista.
+     */
+    public function getVigenteAttribute(): bool
+    {
+        $hoy = now()->toDateString();
+
+        return $this->activa
+            && $this->fecha_inicio->toDateString() <= $hoy
+            && $this->fecha_fin->toDateString() >= $hoy;
+    }
+
     public function preguntas(): HasMany
     {
         return $this->hasMany(Pregunta::class, 'encuesta_id')->orderBy('orden');
