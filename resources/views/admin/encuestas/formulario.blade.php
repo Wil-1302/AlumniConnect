@@ -160,7 +160,7 @@
                 });
             }
 
-            function agregarOpcion(bloquePregunta) {
+            function agregarOpcion(bloquePregunta, textoPrevio) {
                 var indicePregunta = bloquePregunta.dataset.indice;
                 var contenedorOpciones = bloquePregunta.querySelector('.opciones-contenedor');
                 var contadorOpciones = parseInt(contenedorOpciones.dataset.opcionContador, 10) || 0;
@@ -172,6 +172,10 @@
                 var envoltorio = document.createElement('div');
                 envoltorio.innerHTML = html.trim();
                 var nodoOpcion = envoltorio.firstElementChild;
+
+                if (textoPrevio) {
+                    nodoOpcion.querySelector('input[type="text"]').value = textoPrevio;
+                }
 
                 nodoOpcion.querySelector('.btn-quitar-opcion').addEventListener('click', function () {
                     nodoOpcion.remove();
@@ -190,7 +194,12 @@
                 bloqueEscala.classList.toggle('hidden', tipo !== 'escala');
             }
 
-            function agregarPregunta() {
+            /**
+             * datosPrevios, si se pasa, reconstruye una pregunta que el
+             * administrador ya había escrito (proviene de old('preguntas'),
+             * tras una validación fallida) en vez de dejarla en blanco.
+             */
+            function agregarPregunta(datosPrevios) {
                 var html = plantillaPregunta.innerHTML.split('__INDICE__').join(contadorPreguntas);
 
                 var envoltorio = document.createElement('div');
@@ -202,7 +211,8 @@
                     renumerar();
                 });
 
-                nodoPregunta.querySelector('.campo-tipo').addEventListener('change', function () {
+                var campoTipo = nodoPregunta.querySelector('.campo-tipo');
+                campoTipo.addEventListener('change', function () {
                     alternarTipoPregunta(nodoPregunta);
                 });
 
@@ -214,16 +224,47 @@
                 contadorPreguntas++;
                 renumerar();
 
-                // Toda pregunta de opción múltiple necesita al menos 2 opciones.
-                agregarOpcion(nodoPregunta);
-                agregarOpcion(nodoPregunta);
+                if (datosPrevios) {
+                    nodoPregunta.querySelector('input[name$="[enunciado]"]').value = datosPrevios.enunciado || '';
+                    campoTipo.value = datosPrevios.tipo === 'escala' ? 'escala' : 'opcion_multiple';
+
+                    var opcionesPrevias = Object.values(datosPrevios.opciones || {});
+                    if (opcionesPrevias.length > 0) {
+                        opcionesPrevias.forEach(function (opcion) {
+                            agregarOpcion(nodoPregunta, opcion.texto || '');
+                        });
+                    } else {
+                        // Toda pregunta de opción múltiple necesita al menos 2 opciones.
+                        agregarOpcion(nodoPregunta);
+                        agregarOpcion(nodoPregunta);
+                    }
+                } else {
+                    agregarOpcion(nodoPregunta);
+                    agregarOpcion(nodoPregunta);
+                }
+
+                alternarTipoPregunta(nodoPregunta);
+
+                return nodoPregunta;
             }
 
-            document.getElementById('btn-agregar-pregunta').addEventListener('click', agregarPregunta);
+            document.getElementById('btn-agregar-pregunta').addEventListener('click', function () {
+                agregarPregunta();
+            });
 
-            // Arranca con una primera pregunta ya lista, para no entregar un
-            // formulario vacío.
-            agregarPregunta();
+            // Si la validación falló, reconstruye lo que el administrador ya
+            // había escrito (old('preguntas')) en vez de dejar el formulario
+            // en blanco. Si es la primera carga, arranca con una pregunta
+            // vacía ya lista, para no entregar un formulario totalmente vacío.
+            var preguntasPrevias = Object.values(@json(old('preguntas', [])));
+
+            if (preguntasPrevias.length > 0) {
+                preguntasPrevias.forEach(function (pregunta) {
+                    agregarPregunta(pregunta);
+                });
+            } else {
+                agregarPregunta();
+            }
         })();
     </script>
 
