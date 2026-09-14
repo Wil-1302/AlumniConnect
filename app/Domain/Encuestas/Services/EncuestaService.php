@@ -5,6 +5,7 @@ namespace App\Domain\Encuestas\Services;
 use App\Domain\Egresados\Models\Egresado;
 use App\Domain\Encuestas\Models\DetalleRespuesta;
 use App\Domain\Encuestas\Models\Encuesta;
+use App\Domain\Encuestas\Models\Pregunta;
 use App\Domain\Encuestas\Models\RespuestaEncuesta;
 use App\Shared\Exceptions\ReglaNegocioException;
 use Illuminate\Support\Collection;
@@ -27,13 +28,20 @@ class EncuestaService
     /**
      * Registra las respuestas de un egresado.
      *
+     * El Request de presentación (ResponderEncuestaRequest) solo valida
+     * formato: que "respuestas" sea un arreglo y que sus valores tengan
+     * la forma correcta. Verificar que esas respuestas correspondan
+     * exactamente a las preguntas reales de esta encuesta —ni de más ni
+     * de menos, con el tipo de valor que cada una exige— es una regla de
+     * negocio, y por eso vive aquí, no en la capa de presentación.
+     *
      * @param  array<int, array{opcion_id?: int, valor_escala?: int}>  $respuestas
      *         Indexado por identificador de pregunta.
      */
     public function responder(Encuesta $encuesta, Egresado $egresado, array $respuestas): RespuestaEncuesta
     {
         $this->validarNoRespondida($encuesta, $egresado);
-        $this->validarPreguntasCompletas($encuesta, $respuestas);
+        $this->validarPreguntas($encuesta, $respuestas);
 
         return DB::transaction(function () use ($encuesta, $egresado, $respuestas) {
             $cabecera = RespuestaEncuesta::create([
@@ -69,16 +77,50 @@ class EncuestaService
         }
     }
 
-    private function validarPreguntasCompletas(Encuesta $encuesta, array $respuestas): void
+    /**
+     * Valida que "respuestas" tenga exactamente una entrada por cada
+     * pregunta de la encuesta (ni faltantes ni ajenas a ella) y que cada
+     * entrada tenga el dato que su tipo de pregunta exige.
+     */
+    private function validarPreguntas(Encuesta $encuesta, array $respuestas): void
     {
-        $faltantes = $encuesta->preguntas()
-            ->pluck('id')
-            ->diff(array_keys($respuestas));
+        $encuesta->loadMissing('preguntas.opciones');
 
-        if ($faltantes->isNotEmpty()) {
+        $idsPreguntas = $encuesta->preguntas->pluck('id');
+        $idsRespondidos = collect(array_keys($respuestas))->map(fn ($id) => (int) $id);
+
+        if ($idsRespondidos->diff($idsPreguntas)->isNotEmpty()) {
+            throw new ReglaNegocioException(
+                'La respuesta incluye una pregunta que no pertenece a esta encuesta.'
+            );
+        }
+
+        if ($idsPreguntas->diff($idsRespondidos)->isNotEmpty()) {
             throw new ReglaNegocioException(
                 'Debe responder todas las preguntas antes de enviar la encuesta.'
             );
+        }
+
+        foreach ($encuesta->preguntas as $pregunta) {
+            $valor = $respuestas[$pregunta->id] ?? [];
+
+            if ($pregunta->tipo === Pregunta::TIPO_OPCION_MULTIPLE) {
+                $opcionId = $valor['opcion_id'] ?? null;
+
+                if ($opcionId === null || ! $pregunta->opciones->contains('id', (int) $opcionId)) {
+                    throw new ReglaNegocioException(
+                        'Seleccione una opción válida para cada pregunta de opción múltiple.'
+                    );
+                }
+            } else {
+                $valorEscala = $valor['valor_escala'] ?? null;
+
+                if (! is_numeric($valorEscala) || (int) $valorEscala < 1 || (int) $valorEscala > 5) {
+                    throw new ReglaNegocioException(
+                        'Las preguntas de escala deben responderse con un valor entre 1 y 5.'
+                    );
+                }
+            }
         }
     }
 }

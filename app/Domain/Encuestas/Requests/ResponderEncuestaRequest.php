@@ -2,15 +2,14 @@
 
 namespace App\Domain\Encuestas\Requests;
 
-use App\Domain\Encuestas\Models\Pregunta;
-use App\Domain\Encuestas\Repositories\EncuestaRepository;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 /**
- * CU-04: las reglas dependen de las preguntas de la encuesta de la ruta,
- * así que se construyen dinámicamente. La consulta para conocerlas se
- * delega en EncuestaRepository (no se hace directo aquí).
+ * CU-04: valida únicamente formato y estructura del arreglo "respuestas".
+ * Que esas respuestas correspondan a preguntas reales de la encuesta y
+ * traigan el tipo de valor correcto para cada una es una regla de
+ * negocio, no de formato, y por eso la verifica EncuestaService, no este
+ * Request (E-08 numeral 2.2: la presentación recibe datos, no los busca).
  */
 class ResponderEncuestaRequest extends FormRequest
 {
@@ -21,33 +20,17 @@ class ResponderEncuestaRequest extends FormRequest
 
     public function rules(): array
     {
-        $encuesta = app(EncuestaRepository::class)->porId((int) $this->route('id'));
-
-        if ($encuesta === null) {
-            return [];
-        }
-
-        $reglas = [];
-
-        foreach ($encuesta->preguntas as $pregunta) {
-            if ($pregunta->tipo === Pregunta::TIPO_OPCION_MULTIPLE) {
-                $reglas["respuestas.{$pregunta->id}.opcion_id"] = [
-                    'required',
-                    Rule::exists('opciones_pregunta', 'id')->where('pregunta_id', $pregunta->id),
-                ];
-            } else {
-                $reglas["respuestas.{$pregunta->id}.valor_escala"] = ['required', 'integer', 'between:1,5'];
-            }
-        }
-
-        return $reglas;
+        return [
+            'respuestas'                  => ['required', 'array', 'min:1'],
+            'respuestas.*.opcion_id'      => ['nullable', 'integer'],
+            'respuestas.*.valor_escala'   => ['nullable', 'integer', 'between:1,5'],
+        ];
     }
 
     public function messages(): array
     {
         return [
-            'required' => 'Debe responder todas las preguntas antes de enviar la encuesta.',
-            '*.exists' => 'Seleccione una opción válida.',
+            'respuestas.required' => 'Debe responder todas las preguntas antes de enviar la encuesta.',
         ];
     }
 }
