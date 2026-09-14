@@ -23,8 +23,15 @@
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="CACHE_STORE" value="array"/>
-        <env name="DB_CONNECTION" value="sqlite"/>
-        <env name="DB_DATABASE" value=":memory:"/>
+        <!--
+            Postgres separado para pruebas, no SQLite: una migración del
+            proyecto crea una vista con "CREATE OR REPLACE VIEW", sintaxis
+            que SQLite no admite. DB_HOST/DB_PORT/DB_USERNAME/DB_PASSWORD
+            NO se fijan aquí (este archivo se versiona): los toma
+            .env.testing, que está fuera de git igual que .env.
+        -->
+        <env name="DB_CONNECTION" value="pgsql"/>
+        <env name="DB_DATABASE" value="alumni_connect_test"/>
         <env name="DB_URL" value=""/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
