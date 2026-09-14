@@ -6,14 +6,11 @@
     $situacionActual = $egresado->experiencias->firstWhere('es_actual', true);
     $historial = $egresado->experiencias->where('es_actual', false)->sortByDesc('fecha_inicio');
 
-    // RN-08 / E-08 numeral 6: la situación seleccionada oculta los campos de
-    // detalle laboral cuando no aplica tener empresa, cargo o rubro.
-    $situacionesSinDetalle = ['Sin empleo', 'Estudios de posgrado a tiempo completo'];
+    // La situación seleccionada oculta los campos de detalle laboral cuando
+    // su columna requiere_detalle_laboral es false (E-08 numeral 2.2: el
+    // dato vive en el catálogo, no se compara texto literal en la vista).
     $situacionSeleccionada = old('situacion_id', $situacionActual?->situacion_id);
-    $ocultarDetalle = $situaciones
-        ->firstWhere('id', (int) $situacionSeleccionada)
-        ?->nombre;
-    $ocultarDetalle = in_array($ocultarDetalle, $situacionesSinDetalle, true);
+    $ocultarDetalle = ! ($situaciones->firstWhere('id', (int) $situacionSeleccionada)?->requiere_detalle_laboral ?? true);
 @endphp
 
 @section('contenido')
@@ -99,7 +96,7 @@
                         <option value="">Seleccione una situación</option>
                         @foreach ($situaciones as $situacion)
                             <option value="{{ $situacion->id }}"
-                                    data-sin-detalle="{{ in_array($situacion->nombre, $situacionesSinDetalle, true) ? '1' : '0' }}"
+                                    data-sin-detalle="{{ $situacion->requiere_detalle_laboral ? '0' : '1' }}"
                                     @selected((int) $situacionSeleccionada === $situacion->id)>
                                 {{ $situacion->nombre }}
                             </option>

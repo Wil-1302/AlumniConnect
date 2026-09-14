@@ -30,6 +30,20 @@ class OfertaLaboral extends Model
                      ->whereDate('fecha_cierre', '>=', now()->toDateString());
     }
 
+    /**
+     * 'vigente', 'cerrada' o 'desactivada', para listados administrativos.
+     * Reutiliza la misma condición que scopeVigentes() en vez de duplicarla
+     * en la capa de presentación.
+     */
+    public function getEstadoAttribute(): string
+    {
+        return match (true) {
+            ! $this->activa => 'desactivada',
+            $this->fecha_cierre->lt(now()->startOfDay()) => 'cerrada',
+            default => 'vigente',
+        };
+    }
+
     public function rubro(): BelongsTo
     {
         return $this->belongsTo(Rubro::class, 'rubro_id');

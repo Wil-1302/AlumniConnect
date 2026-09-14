@@ -16,11 +16,11 @@ class CatalogosSeeder extends Seeder
     public function run(): void
     {
         DB::table('situaciones_laborales')->insertOrIgnore([
-            ['nombre' => 'Laborando en el rubro de la carrera',     'cuenta_como_empleo' => true],
-            ['nombre' => 'Laborando fuera del rubro de la carrera', 'cuenta_como_empleo' => true],
-            ['nombre' => 'Emprendimiento propio',                   'cuenta_como_empleo' => true],
-            ['nombre' => 'Estudios de posgrado a tiempo completo',  'cuenta_como_empleo' => false],
-            ['nombre' => 'Sin empleo',                              'cuenta_como_empleo' => false],
+            ['nombre' => 'Laborando en el rubro de la carrera',     'cuenta_como_empleo' => true,  'requiere_detalle_laboral' => true],
+            ['nombre' => 'Laborando fuera del rubro de la carrera', 'cuenta_como_empleo' => true,  'requiere_detalle_laboral' => true],
+            ['nombre' => 'Emprendimiento propio',                   'cuenta_como_empleo' => true,  'requiere_detalle_laboral' => true],
+            ['nombre' => 'Estudios de posgrado a tiempo completo',  'cuenta_como_empleo' => false, 'requiere_detalle_laboral' => false],
+            ['nombre' => 'Sin empleo',                              'cuenta_como_empleo' => false, 'requiere_detalle_laboral' => false],
         ]);
 
         $rubros = [

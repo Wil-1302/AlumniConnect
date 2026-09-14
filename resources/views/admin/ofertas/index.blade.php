@@ -32,20 +32,12 @@
                 <tbody class="divide-y divide-slate-100">
                     @foreach ($ofertas as $oferta)
                         @php
-                            // Derivado únicamente para mostrar una etiqueta; no es una regla de
-                            // negocio nueva, replica en la vista la misma condición que ya aplica
-                            // OfertaLaboral::scopeVigentes() sobre estos mismos datos ya cargados.
-                            $estado = match (true) {
-                                ! $oferta->activa => 'desactivada',
-                                $oferta->fecha_cierre->lt(now()->startOfDay()) => 'cerrada',
-                                default => 'vigente',
-                            };
                             $estiloEstado = [
                                 'vigente'     => 'bg-institucional-50 text-institucional-700',
                                 'cerrada'     => 'bg-slate-100 text-slate-600',
                                 'desactivada' => 'bg-slate-200 text-slate-500',
-                            ][$estado];
-                            $etiquetaEstado = ['vigente' => 'Vigente', 'cerrada' => 'Cerrada', 'desactivada' => 'Desactivada'][$estado];
+                            ][$oferta->estado];
+                            $etiquetaEstado = ['vigente' => 'Vigente', 'cerrada' => 'Cerrada', 'desactivada' => 'Desactivada'][$oferta->estado];
                         @endphp
                         <tr>
                             <td class="px-4 py-3 font-medium text-slate-800">{{ $oferta->titulo }}</td>
