@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Domain\Catalogos\Repositories\CatalogoRepository;
 use App\Domain\Egresados\Repositories\EgresadoRepository;
+use App\Domain\Ofertas\Repositories\OfertaRepository;
 use App\Domain\Reportes\Services\ReporteEgresadosService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -15,13 +16,17 @@ class DirectorioController extends Controller
         private readonly EgresadoRepository $egresados,
         private readonly ReporteEgresadosService $reportes,
         private readonly CatalogoRepository $catalogos,
+        private readonly OfertaRepository $ofertas,
     ) {
     }
 
     /** RF-14: tablero de indicadores de empleabilidad. */
     public function tablero(): View
     {
-        return view('admin.tablero', ['indicadores' => $this->reportes->indicadores()]);
+        return view('admin.tablero', [
+            'indicadores'      => $this->reportes->indicadores(),
+            'ofertas_vigentes' => $this->ofertas->vigentes()->total(),
+        ]);
     }
 
     /** RF-15: directorio con filtros combinables. */
