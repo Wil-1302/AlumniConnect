@@ -17,8 +17,7 @@ class LoginController extends Controller
 {
     public function __construct(
         private readonly AutenticacionService $autenticacion,
-    ) {
-    }
+    ) {}
 
     public function mostrar(): View
     {
@@ -28,7 +27,7 @@ class LoginController extends Controller
     public function iniciarSesion(Request $request): RedirectResponse
     {
         $credenciales = $request->validate([
-            'email'    => ['required', 'email'],
+            'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
 
@@ -61,8 +60,6 @@ class LoginController extends Controller
 
     private function rutaSegunRol(Usuario $usuario): string
     {
-        return $usuario->esAdministrador()
-            ? route('admin.tablero')
-            : route('egresado.perfil');
+        return route($usuario->rutaPrincipal());
     }
 }

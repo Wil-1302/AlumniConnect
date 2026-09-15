@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Domain\Seguridad\Models\Usuario;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -24,6 +26,23 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configurarLimitesDePeticiones();
+        $this->configurarRedireccionDeInvitado();
+    }
+
+    /**
+     * Por defecto, el middleware 'guest' manda a un usuario ya autenticado
+     * que visita /login a la ruta 'home' o, si no existe, a '/'. Esta app
+     * no tiene ninguna de las dos, así que sin esto cae en la portada
+     * pública en vez de en la zona que le corresponde por su rol.
+     */
+    private function configurarRedireccionDeInvitado(): void
+    {
+        RedirectIfAuthenticated::redirectUsing(function (Request $request) {
+            /** @var Usuario $usuario */
+            $usuario = $request->user();
+
+            return route($usuario->rutaPrincipal());
+        });
     }
 
     /**
@@ -35,7 +54,7 @@ class AppServiceProvider extends ServiceProvider
     private function configurarLimitesDePeticiones(): void
     {
         RateLimiter::for('login', function (Request $request) {
-            $clave = Str::lower((string) $request->input('email')) . '|' . $request->ip();
+            $clave = Str::lower((string) $request->input('email')).'|'.$request->ip();
 
             return Limit::perMinute(5)->by($clave);
         });

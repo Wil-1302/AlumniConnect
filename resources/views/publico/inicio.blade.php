@@ -11,11 +11,31 @@
     <header class="bg-institucional-700 text-white">
         <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
             <span class="text-lg font-semibold tracking-tight">Alumni Connect EFPISC</span>
-            <a href="{{ route('login') }}" class="rounded px-3 py-2 text-sm font-medium hover:bg-institucional-600">
-                Iniciar sesión
-            </a>
+
+            @auth
+                <div class="flex items-center gap-2">
+                    <span class="hidden text-sm text-institucional-100 sm:inline">{{ auth()->user()->email }}</span>
+                    <a href="{{ route(auth()->user()->rutaPrincipal()) }}"
+                       class="rounded px-3 py-2 text-sm font-medium hover:bg-institucional-600">
+                        Ir a mi zona
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                                class="rounded px-3 py-2 text-sm font-medium hover:bg-institucional-600">
+                            Cerrar sesión
+                        </button>
+                    </form>
+                </div>
+            @else
+                <a href="{{ route('login') }}" class="rounded px-3 py-2 text-sm font-medium hover:bg-institucional-600">
+                    Iniciar sesión
+                </a>
+            @endauth
         </div>
     </header>
+
+    @include('layouts.partials.mensajes-flash')
 
     <main class="flex-1">
         <section class="mx-auto max-w-5xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
@@ -31,14 +51,21 @@
                 </p>
 
                 <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                    <a href="{{ route('registro') }}"
-                       class="w-full rounded-md bg-institucional-700 px-6 py-3 text-center text-sm font-semibold text-white hover:bg-institucional-800 sm:w-auto">
-                        Registrarme
-                    </a>
-                    <a href="{{ route('login') }}"
-                       class="w-full rounded-md border border-institucional-700 px-6 py-3 text-center text-sm font-semibold text-institucional-700 hover:bg-institucional-50 sm:w-auto">
-                        Iniciar sesión
-                    </a>
+                    @auth
+                        <a href="{{ route(auth()->user()->rutaPrincipal()) }}"
+                           class="w-full rounded-md bg-institucional-700 px-6 py-3 text-center text-sm font-semibold text-white hover:bg-institucional-800 sm:w-auto">
+                            Ir a mi zona
+                        </a>
+                    @else
+                        <a href="{{ route('registro') }}"
+                           class="w-full rounded-md bg-institucional-700 px-6 py-3 text-center text-sm font-semibold text-white hover:bg-institucional-800 sm:w-auto">
+                            Registrarme
+                        </a>
+                        <a href="{{ route('login') }}"
+                           class="w-full rounded-md border border-institucional-700 px-6 py-3 text-center text-sm font-semibold text-institucional-700 hover:bg-institucional-50 sm:w-auto">
+                            Iniciar sesión
+                        </a>
+                    @endauth
                 </div>
             </div>
 

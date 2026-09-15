@@ -50,4 +50,14 @@ class Usuario extends Authenticatable implements AuthenticatableContract
     {
         return $this->rol === self::ROL_ADMIN_PRINCIPAL;
     }
+
+    /**
+     * Nombre de la ruta de la zona propia del usuario según su rol.
+     * Punto único usado tras el login, en la portada y en la
+     * redirección de RedirectIfAuthenticated (ver AppServiceProvider).
+     */
+    public function rutaPrincipal(): string
+    {
+        return $this->esAdministrador() ? 'admin.tablero' : 'egresado.perfil';
+    }
 }
