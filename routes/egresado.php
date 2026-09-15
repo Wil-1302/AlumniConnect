@@ -20,13 +20,13 @@ Route::middleware(['auth', 'rol:egresado'])
         Route::get('/perfil', [PerfilController::class, 'mostrar'])->name('perfil');
         Route::put('/perfil', [PerfilController::class, 'actualizar'])->name('perfil.actualizar');
         Route::post('/situacion', [PerfilController::class, 'actualizarSituacion'])
-             ->name('situacion.actualizar');
+            ->name('situacion.actualizar');
 
         Route::get('/ofertas', [OfertaController::class, 'index'])->name('ofertas');
 
         Route::prefix('encuestas')->name('encuestas.')->group(function () {
             Route::get('/', [EncuestaController::class, 'index'])->name('index');
             Route::get('/{id}/responder', [EncuestaController::class, 'mostrar'])->name('responder');
-            Route::post('/{id}/responder', [EncuestaController::class, 'guardar']);
+            Route::post('/{id}/responder', [EncuestaController::class, 'guardar'])->name('guardar');
         });
     });

@@ -14,7 +14,7 @@
     @endif
     <p class="mt-1 text-xs text-slate-400">Disponible hasta el {{ $encuesta->fecha_fin->format('d/m/Y') }}</p>
 
-    <form method="POST" action="{{ route('egresado.encuestas.responder', $encuesta->id) }}" class="mt-6 max-w-2xl space-y-5">
+    <form method="POST" action="{{ route('egresado.encuestas.guardar', $encuesta->id) }}" class="mt-6 max-w-2xl space-y-5">
         @csrf
 
         @foreach ($encuesta->preguntas as $indice => $pregunta)
