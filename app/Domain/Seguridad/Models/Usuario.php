@@ -5,25 +5,27 @@ namespace App\Domain\Seguridad\Models;
 use App\Domain\Egresados\Models\Egresado;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Usuario extends Authenticatable implements AuthenticatableContract
 {
     use HasFactory;
 
-    public const ROL_EGRESADO        = 'egresado';
-    public const ROL_ADMINISTRADOR   = 'administrador';
+    public const ROL_EGRESADO = 'egresado';
+
+    public const ROL_ADMINISTRADOR = 'administrador';
+
     public const ROL_ADMIN_PRINCIPAL = 'admin_principal';
 
     protected $table = 'usuarios';
 
     protected $fillable = ['email', 'password_hash', 'rol', 'activo'];
 
-    protected $hidden = ['password_hash'];
+    protected $hidden = ['password_hash', 'remember_token'];
 
     protected $casts = [
-        'activo'        => 'boolean',
+        'activo' => 'boolean',
         'ultimo_acceso' => 'datetime',
     ];
 
