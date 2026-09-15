@@ -60,6 +60,39 @@ class ResponderEncuestaTest extends TestCase
         return [$encuesta, $preguntaOpcion, $opcion, $preguntaEscala];
     }
 
+    /** Igual que la anterior, pero la pregunta de escala es opcional. */
+    private function crearEncuestaConPreguntaOpcional(): array
+    {
+        $admin = Usuario::create([
+            'email' => 'admin-cu04-opt-' . uniqid() . '@example.test', 'password_hash' => 'x',
+            'rol' => Usuario::ROL_ADMINISTRADOR, 'activo' => true,
+        ]);
+
+        $encuesta = Encuesta::create([
+            'creada_por' => $admin->id, 'titulo' => 'Encuesta con pregunta opcional',
+            'fecha_inicio' => now()->subDay()->toDateString(),
+            'fecha_fin' => now()->addDays(10)->toDateString(), 'activa' => true,
+        ]);
+
+        $preguntaObligatoria = Pregunta::create([
+            'encuesta_id' => $encuesta->id, 'enunciado' => '¿En qué rubro trabajas?',
+            'tipo' => Pregunta::TIPO_OPCION_MULTIPLE, 'orden' => 1, 'es_obligatoria' => true,
+        ]);
+        $opcion = OpcionPregunta::create([
+            'pregunta_id' => $preguntaObligatoria->id, 'texto' => 'Tecnología', 'orden' => 1,
+        ]);
+
+        $preguntaOpcional = Pregunta::create([
+            'encuesta_id' => $encuesta->id, 'enunciado' => '¿Algún comentario adicional? (opcional)',
+            'tipo' => Pregunta::TIPO_OPCION_MULTIPLE, 'orden' => 2, 'es_obligatoria' => false,
+        ]);
+        $opcionOpcional = OpcionPregunta::create([
+            'pregunta_id' => $preguntaOpcional->id, 'texto' => 'Sí', 'orden' => 1,
+        ]);
+
+        return [$encuesta, $preguntaObligatoria, $opcion, $preguntaOpcional, $opcionOpcional];
+    }
+
     public function test_ve_la_encuesta_pendiente_y_el_formulario(): void
     {
         $egresado = $this->crearEgresado();
@@ -141,5 +174,83 @@ class ResponderEncuestaTest extends TestCase
         $segundoIntento->assertSessionHasErrors('respuestas');
         $this->assertSame(1, DB::table('respuestas_encuesta')
             ->where('encuesta_id', $encuesta->id)->where('egresado_id', $egresado->id)->count());
+    }
+
+    /** es_obligatoria = false: la pregunta puede quedar sin responder. */
+    public function test_permite_omitir_una_pregunta_no_obligatoria(): void
+    {
+        $egresado = $this->crearEgresado();
+        [$encuesta, $preguntaObligatoria, $opcion, $preguntaOpcional] = $this->crearEncuestaConPreguntaOpcional();
+
+        $respuesta = $this->actingAs($egresado->usuario)->post(route('egresado.encuestas.responder', $encuesta->id), [
+            'respuestas' => [
+                $preguntaObligatoria->id => ['opcion_id' => $opcion->id],
+            ],
+        ]);
+
+        // (La pregunta opcional queda sin ninguna entrada en "respuestas".)
+
+        $respuesta->assertRedirect(route('egresado.encuestas.index'));
+        $respuesta->assertSessionHas('exito');
+        $this->assertDatabaseHas('respuestas_encuesta', [
+            'encuesta_id' => $encuesta->id, 'egresado_id' => $egresado->id,
+        ]);
+        $this->assertDatabaseMissing('detalle_respuestas', [
+            'pregunta_id' => $preguntaOpcional->id,
+        ]);
+    }
+
+    /** es_obligatoria = true (la otra pregunta) sigue siendo exigida. */
+    public function test_exige_las_preguntas_obligatorias_aunque_otra_sea_opcional(): void
+    {
+        $egresado = $this->crearEgresado();
+        [$encuesta, , , $preguntaOpcional, $opcionOpcional] = $this->crearEncuestaConPreguntaOpcional();
+
+        // Solo responde la opcional, omite la obligatoria.
+        $respuesta = $this->actingAs($egresado->usuario)
+            ->from(route('egresado.encuestas.responder', $encuesta->id))
+            ->post(route('egresado.encuestas.responder', $encuesta->id), [
+                'respuestas' => [
+                    $preguntaOpcional->id => ['opcion_id' => $opcionOpcional->id],
+                ],
+            ]);
+
+        $respuesta->assertRedirect(route('egresado.encuestas.responder', $encuesta->id));
+        $respuesta->assertSessionHasErrors('respuestas');
+        $this->assertStringContainsString(
+            'preguntas obligatorias',
+            session('errors')->first('respuestas'),
+        );
+        $this->assertDatabaseMissing('respuestas_encuesta', [
+            'encuesta_id' => $encuesta->id, 'egresado_id' => $egresado->id,
+        ]);
+    }
+
+    /** Si el egresado sí responde la opcional, su valor también se valida. */
+    public function test_valida_el_formato_de_una_pregunta_opcional_si_fue_respondida(): void
+    {
+        $egresado = $this->crearEgresado();
+        [$encuesta, $preguntaObligatoria, $opcion, $preguntaOpcional] = $this->crearEncuestaConPreguntaOpcional();
+
+        $respuesta = $this->actingAs($egresado->usuario)
+            ->from(route('egresado.encuestas.responder', $encuesta->id))
+            ->post(route('egresado.encuestas.responder', $encuesta->id), [
+                'respuestas' => [
+                    $preguntaObligatoria->id => ['opcion_id' => $opcion->id],
+                    // $opcion pertenece a preguntaObligatoria, no a preguntaOpcional:
+                    // formato correcto (es un entero), pero no es una opción válida
+                    // para esta pregunta. Solo lo detecta la regla de negocio.
+                    $preguntaOpcional->id    => ['opcion_id' => $opcion->id],
+                ],
+            ]);
+
+        $respuesta->assertSessionHasErrors('respuestas');
+        $this->assertStringContainsString(
+            'opción válida',
+            session('errors')->first('respuestas'),
+        );
+        $this->assertDatabaseMissing('respuestas_encuesta', [
+            'encuesta_id' => $encuesta->id, 'egresado_id' => $egresado->id,
+        ]);
     }
 }

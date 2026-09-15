@@ -78,15 +78,17 @@ class EncuestaService
     }
 
     /**
-     * Valida que "respuestas" tenga exactamente una entrada por cada
-     * pregunta de la encuesta (ni faltantes ni ajenas a ella) y que cada
-     * entrada tenga el dato que su tipo de pregunta exige.
+     * Valida que "respuestas" tenga una entrada por cada pregunta
+     * obligatoria de la encuesta (ni faltantes ni ajenas a ella) y que
+     * cada entrada presente tenga el dato que su tipo de pregunta exige.
+     * Una pregunta con es_obligatoria = false puede quedar sin responder.
      */
     private function validarPreguntas(Encuesta $encuesta, array $respuestas): void
     {
         $encuesta->loadMissing('preguntas.opciones');
 
         $idsPreguntas = $encuesta->preguntas->pluck('id');
+        $idsObligatorias = $encuesta->preguntas->where('es_obligatoria', true)->pluck('id');
         $idsRespondidos = collect(array_keys($respuestas))->map(fn ($id) => (int) $id);
 
         if ($idsRespondidos->diff($idsPreguntas)->isNotEmpty()) {
@@ -95,14 +97,19 @@ class EncuestaService
             );
         }
 
-        if ($idsPreguntas->diff($idsRespondidos)->isNotEmpty()) {
+        if ($idsObligatorias->diff($idsRespondidos)->isNotEmpty()) {
             throw new ReglaNegocioException(
-                'Debe responder todas las preguntas antes de enviar la encuesta.'
+                'Debe responder todas las preguntas obligatorias antes de enviar la encuesta.'
             );
         }
 
         foreach ($encuesta->preguntas as $pregunta) {
-            $valor = $respuestas[$pregunta->id] ?? [];
+            if (! $idsRespondidos->contains($pregunta->id)) {
+                // Solo puede faltar si no es obligatoria; ya se validó arriba.
+                continue;
+            }
+
+            $valor = $respuestas[$pregunta->id];
 
             if ($pregunta->tipo === Pregunta::TIPO_OPCION_MULTIPLE) {
                 $opcionId = $valor['opcion_id'] ?? null;

@@ -14,7 +14,9 @@ class Pregunta extends Model
     protected $table = 'preguntas';
     public $timestamps = false;
 
-    protected $fillable = ['encuesta_id', 'enunciado', 'tipo', 'orden'];
+    protected $fillable = ['encuesta_id', 'enunciado', 'tipo', 'orden', 'es_obligatoria'];
+
+    protected $casts = ['es_obligatoria' => 'boolean'];
 
     public function encuesta(): BelongsTo
     {
