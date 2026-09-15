@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+# Credenciales fijas de un servicio Postgres efímero, exclusivo de este
+# job y descartado al terminar: no son secretos de un entorno real.
+env:
+  DB_CONNECTION: pgsql
+  DB_HOST: 127.0.0.1
+  DB_PORT: 5432
+  DB_DATABASE: alumni_connect_test
+  DB_USERNAME: postgres
+  DB_PASSWORD: postgres
+
+jobs:
+  tests:
+    name: Pruebas
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: alumni_connect_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, bcmath, dom, fileinfo, gd, intl, pdo, pgsql, pdo_pgsql, xml, zip
+          coverage: none
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Cache de dependencias de Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - name: Instalar dependencias de Composer
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Instalar dependencias de Node
+        run: npm ci
+
+      - name: Compilar recursos (Vite)
+        run: npm run build
+
+      - name: Preparar entorno de la aplicacion
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Ejecutar migraciones contra la base de prueba
+        run: php artisan migrate --force
+
+      - name: Ejecutar pruebas
+        run: php artisan test
