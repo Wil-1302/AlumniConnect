@@ -11,7 +11,7 @@ class EstudioPosgrado extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'egresado_id', 'grado', 'institucion', 'anio_inicio', 'anio_fin', 'en_curso',
+        'egresado_id', 'grado', 'nombre_programa', 'institucion', 'anio_inicio', 'anio_fin', 'en_curso',
     ];
 
     protected $casts = ['en_curso' => 'boolean'];

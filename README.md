@@ -113,6 +113,11 @@ routes/web.php
       `PadronPruebaSeeder` sigue siendo aparte, solo para desarrollo)
 - [x] Comando `usuario:crear-admin` para el primer acceso en producción,
       reemplaza la creación manual de administradores en base de datos
+- [ ] Formulario del perfil para registrar estudios de posgrado. El modelo
+      `EstudioPosgrado` y su migración existen, incluida la columna
+      `nombre_programa` (qué se estudió, no solo el grado), pero no hay
+      ruta, controlador ni sección en `egresado/perfil.blade.php` todavía;
+      nadie puede cargar un estudio de posgrado desde la interfaz.
 
 ## 9. Convenciones de ramas
 
