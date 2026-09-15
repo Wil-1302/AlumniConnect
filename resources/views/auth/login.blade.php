@@ -6,9 +6,9 @@
     <title>Iniciar sesión — Alumni Connect EFPISC</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="flex min-h-screen flex-col bg-slate-50 text-slate-800 antialiased">
+<body class="flex min-h-screen flex-col bg-gradient-to-br from-institucional-50 via-slate-50 to-institucional-100 text-slate-800 antialiased">
 
-    <header class="bg-institucional-700 text-white">
+    <header class="border-b border-white/10 bg-institucional-700/90 text-white backdrop-blur-md">
         <div class="mx-auto max-w-5xl px-4 py-4 sm:px-6 lg:px-8">
             <a href="{{ route('inicio') }}" class="text-lg font-semibold tracking-tight">
                 Alumni Connect EFPISC
@@ -19,7 +19,7 @@
     @include('layouts.partials.mensajes-flash')
 
     <main class="mx-auto flex w-full max-w-5xl flex-1 items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
-        <div class="w-full max-w-sm rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <div class="animate-fade-in-up w-full max-w-sm rounded-lg border border-white/60 bg-white/80 p-6 shadow-xl backdrop-blur-md sm:p-8">
             <h1 class="text-xl font-semibold text-slate-900">Iniciar sesión</h1>
             <p class="mt-1 text-sm text-slate-500">Ingresa con tu correo institucional.</p>
 
@@ -30,13 +30,13 @@
                     <label for="email" class="block text-sm font-medium text-slate-700">Correo electrónico</label>
                     <input type="email" name="email" id="email" required autofocus
                            value="{{ old('email') }}"
-                           class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-institucional-500 focus:outline-none focus:ring-1 focus:ring-institucional-500">
+                           class="mt-1 block w-full rounded-md border border-slate-300 bg-white/90 px-3 py-2 text-sm transition-colors duration-150 focus:border-institucional-500 focus:outline-none focus:ring-1 focus:ring-institucional-500">
                 </div>
 
                 <div>
                     <label for="password" class="block text-sm font-medium text-slate-700">Contraseña</label>
                     <input type="password" name="password" id="password" required
-                           class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-institucional-500 focus:outline-none focus:ring-1 focus:ring-institucional-500">
+                           class="mt-1 block w-full rounded-md border border-slate-300 bg-white/90 px-3 py-2 text-sm transition-colors duration-150 focus:border-institucional-500 focus:outline-none focus:ring-1 focus:ring-institucional-500">
                 </div>
 
                 <label class="flex items-center gap-2 text-sm text-slate-600">
@@ -46,7 +46,7 @@
                 </label>
 
                 <button type="submit"
-                        class="w-full rounded-md bg-institucional-700 px-4 py-2 text-sm font-semibold text-white hover:bg-institucional-800">
+                        class="w-full rounded-md bg-institucional-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:bg-institucional-800 hover:shadow-md">
                     Ingresar
                 </button>
             </form>

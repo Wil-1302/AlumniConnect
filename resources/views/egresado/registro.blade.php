@@ -6,9 +6,9 @@
     <title>Crea tu cuenta — Alumni Connect EFPISC</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="flex min-h-screen flex-col bg-slate-50 text-slate-800 antialiased">
+<body class="flex min-h-screen flex-col bg-gradient-to-br from-institucional-50 via-slate-50 to-institucional-100 text-slate-800 antialiased">
 
-    <header class="bg-institucional-700 text-white">
+    <header class="border-b border-white/10 bg-institucional-700/90 text-white backdrop-blur-md">
         <div class="mx-auto max-w-3xl px-4 py-4 sm:px-6 lg:px-8">
             <a href="{{ route('inicio') }}" class="text-lg font-semibold tracking-tight">
                 Alumni Connect EFPISC
@@ -17,7 +17,7 @@
     </header>
 
     <main class="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-md">
+        <div class="animate-fade-in-up mx-auto max-w-md rounded-lg border border-white/60 bg-white/80 p-6 shadow-xl backdrop-blur-md sm:p-8">
 
             <h1 class="text-2xl font-bold text-slate-900">Crea tu cuenta de egresado</h1>
             <p class="mt-2 text-sm text-slate-600">
@@ -45,7 +45,7 @@
                            name="dni" id="dni" required autofocus
                            value="{{ old('dni') }}"
                            aria-invalid="{{ $errors->has('dni') ? 'true' : 'false' }}"
-                           class="mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-1
+                           class="mt-1 block w-full rounded-md border px-3 py-2 text-sm transition-colors duration-150 focus:outline-none focus:ring-1
                                   {{ $errors->has('dni') ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : 'border-slate-300 focus:border-institucional-500 focus:ring-institucional-500' }}">
                     @error('dni')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -60,7 +60,7 @@
                     <input type="email" name="email" id="email" required
                            value="{{ old('email') }}"
                            aria-invalid="{{ $errors->has('email') ? 'true' : 'false' }}"
-                           class="mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-1
+                           class="mt-1 block w-full rounded-md border px-3 py-2 text-sm transition-colors duration-150 focus:outline-none focus:ring-1
                                   {{ $errors->has('email') ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : 'border-slate-300 focus:border-institucional-500 focus:ring-institucional-500' }}">
                     @error('email')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -74,7 +74,7 @@
                     </label>
                     <input type="password" name="password" id="password" required minlength="8"
                            aria-invalid="{{ $errors->has('password') ? 'true' : 'false' }}"
-                           class="mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-1
+                           class="mt-1 block w-full rounded-md border px-3 py-2 text-sm transition-colors duration-150 focus:outline-none focus:ring-1
                                   {{ $errors->has('password') ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : 'border-slate-300 focus:border-institucional-500 focus:ring-institucional-500' }}">
                     <p class="mt-1 text-xs text-slate-500">Mínimo 8 caracteres.</p>
                     @error('password')
@@ -88,7 +88,7 @@
                         Confirmar contraseña
                     </label>
                     <input type="password" name="password_confirmation" id="password_confirmation" required
-                           class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-institucional-500 focus:outline-none focus:ring-1 focus:ring-institucional-500">
+                           class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm transition-colors duration-150 focus:border-institucional-500 focus:outline-none focus:ring-1 focus:ring-institucional-500">
                 </div>
 
                 {{-- Datos opcionales: colapsados, no cuentan para los 5 obligatorios --}}
@@ -146,7 +146,7 @@
                 </div>
 
                 <button type="submit"
-                        class="w-full rounded-md bg-institucional-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-institucional-800">
+                        class="w-full rounded-md bg-institucional-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:bg-institucional-800 hover:shadow-md">
                     Crear mi cuenta
                 </button>
             </form>
