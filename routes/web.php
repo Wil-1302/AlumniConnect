@@ -20,7 +20,8 @@ Route::post('/registro', [RegistroController::class, 'guardar']);
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'mostrar'])->name('login');
-    Route::post('/login', [LoginController::class, 'iniciarSesion']);
+    Route::post('/login', [LoginController::class, 'iniciarSesion'])
+        ->middleware('throttle:login');
 });
 
 Route::post('/logout', [LoginController::class, 'cerrarSesion'])
