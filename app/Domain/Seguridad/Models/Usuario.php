@@ -42,4 +42,10 @@ class Usuario extends Authenticatable implements AuthenticatableContract
     {
         return in_array($this->rol, [self::ROL_ADMINISTRADOR, self::ROL_ADMIN_PRINCIPAL], true);
     }
+
+    /** RF-31: solo admin_principal puede importar el padrón; administrador solo lo consulta. */
+    public function esAdminPrincipal(): bool
+    {
+        return $this->rol === self::ROL_ADMIN_PRINCIPAL;
+    }
 }

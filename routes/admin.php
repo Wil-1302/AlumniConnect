@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\DirectorioController;
 use App\Http\Controllers\Admin\EncuestaAdminController;
 use App\Http\Controllers\Admin\OfertaAdminController;
+use App\Http\Controllers\Admin\PadronController;
 use App\Http\Controllers\Admin\ReporteController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,5 +38,17 @@ Route::middleware(['auth', 'rol:administrador,admin_principal'])
             Route::patch('/{id}/activar', [EncuestaAdminController::class, 'activar'])->name('activar');
             Route::patch('/{id}/desactivar', [EncuestaAdminController::class, 'desactivar'])->name('desactivar');
             Route::get('/{id}/resultados', [EncuestaAdminController::class, 'resultados'])->name('resultados');
+        });
+
+        // RF-31: consultar el padrón lo puede administrador y admin_principal;
+        // importarlo, solo admin_principal (regla reforzada abajo).
+        Route::prefix('padron')->name('padron.')->group(function () {
+            Route::get('/', [PadronController::class, 'index'])->name('index');
+            Route::get('/plantilla', [PadronController::class, 'plantilla'])->name('plantilla');
+
+            Route::middleware('rol:admin_principal')->group(function () {
+                Route::get('/importar', [PadronController::class, 'formularioImportar'])->name('importar');
+                Route::post('/importar', [PadronController::class, 'importar'])->name('importar.guardar');
+            });
         });
     });

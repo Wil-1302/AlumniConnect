@@ -108,8 +108,11 @@ routes/web.php
 - [ ] Recordatorios de actualización de perfil (RF-21)
 - [ ] Autenticación con Google (RF-11)
 - [x] Pruebas de las reglas RN-01, RN-02, RN-04, RN-06, RN-07 y RN-08
-- [ ] Carga inicial del padrón de egresados (el `PadronPruebaSeeder` existente
-      es solo para pruebas en desarrollo, no la carga real del padrón oficial)
+- [x] Carga inicial del padrón de egresados (RF-31: importación masiva desde
+      Excel/CSV en `/admin/padron/importar`, solo admin_principal;
+      `PadronPruebaSeeder` sigue siendo aparte, solo para desarrollo)
+- [x] Comando `usuario:crear-admin` para el primer acceso en producción,
+      reemplaza la creación manual de administradores en base de datos
 
 ## 9. Convenciones de ramas
 
