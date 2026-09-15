@@ -3,6 +3,7 @@
 namespace App\Domain\Seguridad\Models;
 
 use App\Domain\Egresados\Models\Egresado;
+use Database\Factories\UsuarioFactory;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -59,5 +60,11 @@ class Usuario extends Authenticatable implements AuthenticatableContract
     public function rutaPrincipal(): string
     {
         return $this->esAdministrador() ? 'admin.tablero' : 'egresado.perfil';
+    }
+
+    /** El modelo vive en App\Domain\..., fuera del namespace que Laravel adivina por defecto. */
+    protected static function newFactory(): UsuarioFactory
+    {
+        return UsuarioFactory::new();
     }
 }

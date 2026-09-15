@@ -71,7 +71,11 @@
                         {{ $etiquetaModalidad }}
                     </span>
 
-                    <h2 class="mt-2 text-base font-semibold text-slate-900">{{ $oferta->titulo }}</h2>
+                    <h2 class="mt-2 text-base font-semibold text-slate-900">
+                        <a href="{{ route('egresado.ofertas.detalle', $oferta->id) }}" class="hover:underline">
+                            {{ $oferta->titulo }}
+                        </a>
+                    </h2>
                     <p class="text-sm text-slate-600">{{ $oferta->empresa }}</p>
                     <p class="mt-1 text-xs text-slate-400">{{ $oferta->rubro?->nombre ?? 'Sin rubro específico' }}</p>
 
@@ -89,6 +93,11 @@
                             @endif
                         </span>
                     </div>
+
+                    <a href="{{ route('egresado.ofertas.detalle', $oferta->id) }}"
+                       class="mt-3 inline-block rounded-md bg-institucional-700 px-4 py-2 text-center text-sm font-semibold text-white transition-colors duration-150 hover:bg-institucional-800">
+                        Ver detalle
+                    </a>
                 </article>
             @endforeach
         </div>

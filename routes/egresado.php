@@ -23,6 +23,7 @@ Route::middleware(['auth', 'rol:egresado'])
             ->name('situacion.actualizar');
 
         Route::get('/ofertas', [OfertaController::class, 'index'])->name('ofertas');
+        Route::get('/ofertas/{id}', [OfertaController::class, 'mostrar'])->name('ofertas.detalle');
 
         Route::prefix('encuestas')->name('encuestas.')->group(function () {
             Route::get('/', [EncuestaController::class, 'index'])->name('index');

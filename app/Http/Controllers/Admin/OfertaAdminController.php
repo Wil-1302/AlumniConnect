@@ -17,8 +17,7 @@ class OfertaAdminController extends Controller
         private readonly OfertaService $ofertas,
         private readonly OfertaRepository $repositorio,
         private readonly CatalogoRepository $catalogos,
-    ) {
-    }
+    ) {}
 
     public function index(): View
     {
@@ -48,5 +47,19 @@ class OfertaAdminController extends Controller
         $this->ofertas->desactivar($id);
 
         return back()->with('exito', 'La oferta fue desactivada.');
+    }
+
+    public function activar(int $id): RedirectResponse
+    {
+        $this->ofertas->activar($id);
+
+        return back()->with('exito', 'La oferta fue reactivada.');
+    }
+
+    public function eliminar(int $id): RedirectResponse
+    {
+        $this->ofertas->eliminar($id);
+
+        return back()->with('exito', 'La oferta fue eliminada.');
     }
 }

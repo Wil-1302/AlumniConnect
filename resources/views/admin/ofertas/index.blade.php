@@ -49,19 +49,38 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3">
-                                @if ($oferta->activa)
-                                    <form method="POST" action="{{ route('admin.ofertas.desactivar', $oferta->id) }}"
-                                          onsubmit="return confirm('¿Desactivar la oferta &quot;{{ $oferta->titulo }}&quot;? Dejará de mostrarse a los egresados.');">
+                                <div class="flex flex-wrap gap-2">
+                                    @if ($oferta->activa)
+                                        <form method="POST" action="{{ route('admin.ofertas.desactivar', $oferta->id) }}"
+                                              onsubmit="return confirm('¿Desactivar la oferta &quot;{{ $oferta->titulo }}&quot;? Dejará de mostrarse a los egresados.');">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit"
+                                                    class="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">
+                                                Desactivar
+                                            </button>
+                                        </form>
+                                    @else
+                                        <form method="POST" action="{{ route('admin.ofertas.activar', $oferta->id) }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit"
+                                                    class="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">
+                                                Reactivar
+                                            </button>
+                                        </form>
+                                    @endif
+
+                                    <form method="POST" action="{{ route('admin.ofertas.eliminar', $oferta->id) }}"
+                                          onsubmit="return confirm('¿Eliminar definitivamente la oferta &quot;{{ $oferta->titulo }}&quot;? Esta acción no se puede deshacer.');">
                                         @csrf
-                                        @method('PATCH')
+                                        @method('DELETE')
                                         <button type="submit"
-                                                class="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">
-                                            Desactivar
+                                                class="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50">
+                                            Eliminar
                                         </button>
                                     </form>
-                                @else
-                                    <span class="text-slate-400">—</span>
-                                @endif
+                                </div>
                             </td>
                         </tr>
                     @endforeach

@@ -25,7 +25,11 @@ Route::middleware(['auth', 'rol:administrador,admin_principal'])
         Route::get('/ofertas/crear', [OfertaAdminController::class, 'crear'])->name('ofertas.crear');
         Route::post('/ofertas', [OfertaAdminController::class, 'guardar'])->name('ofertas.guardar');
         Route::patch('/ofertas/{id}/desactivar', [OfertaAdminController::class, 'desactivar'])
-             ->name('ofertas.desactivar');
+            ->name('ofertas.desactivar');
+        Route::patch('/ofertas/{id}/activar', [OfertaAdminController::class, 'activar'])
+            ->name('ofertas.activar');
+        Route::delete('/ofertas/{id}', [OfertaAdminController::class, 'eliminar'])
+            ->name('ofertas.eliminar');
 
         Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes');
         Route::get('/reportes/exportar/excel', [ReporteController::class, 'exportarExcel'])->name('reportes.exportar.excel');

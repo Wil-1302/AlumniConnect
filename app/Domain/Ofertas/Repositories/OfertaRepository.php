@@ -47,4 +47,9 @@ class OfertaRepository
 
         return $oferta->refresh();
     }
+
+    public function eliminar(OfertaLaboral $oferta): void
+    {
+        $oferta->delete();
+    }
 }

@@ -14,12 +14,16 @@ class OfertaService
 {
     public function __construct(
         private readonly OfertaRepository $ofertas,
-    ) {
-    }
+    ) {}
 
     public function listarVigentes(array $filtros = []): LengthAwarePaginator
     {
         return $this->ofertas->vigentes($filtros);
+    }
+
+    public function verDetalle(int $ofertaId): OfertaLaboral
+    {
+        return $this->obtener($ofertaId);
     }
 
     public function publicar(array $datos, int $usuarioId): OfertaLaboral
@@ -27,9 +31,9 @@ class OfertaService
         $this->validarFechaCierre($datos['fecha_cierre']);
 
         return $this->ofertas->crear($datos + [
-            'creada_por'        => $usuarioId,
+            'creada_por' => $usuarioId,
             'fecha_publicacion' => now()->toDateString(),
-            'activa'            => true,
+            'activa' => true,
         ]);
     }
 
@@ -48,6 +52,23 @@ class OfertaService
     public function desactivar(int $ofertaId): OfertaLaboral
     {
         return $this->ofertas->actualizar($this->obtener($ofertaId), ['activa' => false]);
+    }
+
+    /**
+     * Puede dejar la oferta en estado "cerrada" si su fecha_cierre ya pasó
+     * (vuelve a mostrarse en la bolsa solo si esa fecha sigue vigente); no
+     * se bloquea porque reactivar una oferta vencida no infringe ninguna
+     * regla, solo no la hace visible hasta que se edite la fecha.
+     */
+    public function activar(int $ofertaId): OfertaLaboral
+    {
+        return $this->ofertas->actualizar($this->obtener($ofertaId), ['activa' => true]);
+    }
+
+    /** Elimina la oferta definitivamente (a diferencia de desactivar, no queda histórico). */
+    public function eliminar(int $ofertaId): void
+    {
+        $this->ofertas->eliminar($this->obtener($ofertaId));
     }
 
     private function obtener(int $ofertaId): OfertaLaboral
