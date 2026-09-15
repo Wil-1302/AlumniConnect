@@ -38,6 +38,14 @@
                    class="rounded px-3 py-2 text-sm font-medium hover:bg-institucional-700 {{ request()->routeIs('admin.ofertas.*') ? 'bg-institucional-800' : '' }}">
                     Ofertas
                 </a>
+                <a href="{{ route('admin.padron.index') }}"
+                   class="rounded px-3 py-2 text-sm font-medium hover:bg-institucional-700 {{ request()->routeIs('admin.padron.*') ? 'bg-institucional-800' : '' }}">
+                    Padrón
+                </a>
+                <a href="{{ route('admin.encuestas.index') }}"
+                   class="rounded px-3 py-2 text-sm font-medium hover:bg-institucional-700 {{ request()->routeIs('admin.encuestas.*') ? 'bg-institucional-800' : '' }}">
+                    Encuestas
+                </a>
                 <a href="{{ route('admin.reportes') }}"
                    class="rounded px-3 py-2 text-sm font-medium hover:bg-institucional-700 {{ request()->routeIs('admin.reportes') ? 'bg-institucional-800' : '' }}">
                     Reportes
